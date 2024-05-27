@@ -1,8 +1,12 @@
 import rollupPluginJspm from '@jspm/plugin-rollup';
 import { readdirSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { join, sep, posix } from 'path'
 import rimraf from 'rimraf';
 
 rimraf.sync('./nodelibs/browser');
+
+const __dirname = join(fileURLToPath(import.meta.url), '../').split(sep).join(posix.sep);
 
 const input = Object.fromEntries(
   [
@@ -21,6 +25,7 @@ const input = Object.fromEntries(
     .map(n => [n.slice(0, -3), './src-browser/' + n])
 );
 
+input[`file:///${__dirname}node_modules/readable-stream/lib/stream`] = `file:///${__dirname}node_modules/readable-stream/lib/stream.js`
 const jspmPlugin = rollupPluginJspm({
   env: ['browser'],
   inputMap: {
@@ -46,7 +51,7 @@ const jspmPlugin = rollupPluginJspm({
       './node_modules/punycode/': input,
       './node_modules/querystring/': input,
       './node_modules/rollup/': input,
-      './node_modules/stream-browserify/': input,
+      './node_modules/readable-stream/': input,
       './node_modules/stream-http/': input,
       './node_modules/string_decoder/': input,
       './node_modules/timers-browserify/': input,
